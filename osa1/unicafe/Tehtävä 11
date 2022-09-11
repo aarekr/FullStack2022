@@ -1,0 +1,69 @@
+import { useState } from "react";
+
+const Title = ({text}) => <div><h1>{text}</h1></div>
+
+const Button = props => <button onClick={props.handleClick}>{props.text}</button>
+
+const Statistics = (props) => {
+  if (props.value4 === 0){  // all
+    return(
+      <div>No feedback given</div>
+    )
+  }
+  return(
+    <div>
+      <table>
+        <tbody>
+          <tr><StatisticsLine text="good" value={props.value1} /></tr>
+          <tr><StatisticsLine text="neutral" value={props.value2} /></tr>
+          <tr><StatisticsLine text="bad" value={props.value3} /></tr>
+          <tr><StatisticsLine text="all" value={props.value4} /></tr>
+          <tr><StatisticsLine text="average" value={props.value5} /></tr>
+          <tr><StatisticsLine text="positive" value={props.value6} text_end="%" /></tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+const StatisticsLine = (props) => {
+  return(
+    <>
+      <td>{props.text}</td><td>{props.value}</td><td>{props.text_end}</td>
+    </>
+  )
+}
+
+const App = () => {
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+  const [all, setAll] = useState(0)
+
+  const increaseGood = () => {
+    setGood(good + 1)
+    setAll(all + 1)
+  }
+  const increaseNeutral = () => {
+    setNeutral(neutral + 1)
+    setAll(all + 1)
+  }
+  const increaseBad = () => {
+    setBad(bad + 1)
+    setAll(all + 1)
+  }
+
+  return(
+    <div>
+      <Title text="give feedback" />
+      <Button handleClick={increaseGood} text="good" />
+      <Button handleClick={increaseNeutral} text="neutral" />
+      <Button handleClick={increaseBad} text="bad" />
+      <Title text="statistics" />
+      <Statistics value1={good} value2={neutral} value3={bad}
+                  value4={all} value5={(good-bad)/all} value6={100*good/all} />
+    </div>
+  )
+}
+
+export default App;
