@@ -1,0 +1,52 @@
+const Course = ({ course }) => {
+    return(
+      <div>
+        <Header course={course} />
+        <Content course={course} />
+        <Total course={course} />
+      </div>
+    )
+  }
+  
+  const Header = ({ course }) => {
+    return(
+      <div>
+        <h2>{course.name}</h2>
+      </div>
+    )
+  }
+  
+  const Content = ({ course }) => {
+    return(
+      <div>
+        {course.parts.map(part => 
+          <Part key={part.id} part={part} />
+        )}
+      </div>
+    )
+  }
+  
+  const Part = ({ part }) => {
+    return(
+      <div>
+        <p>{part.name} {part.exercises}</p>
+      </div>
+    )
+  }
+  
+  const Total = ({ course }) => {
+    let i = 0; let taulu = []
+    while (i < course.parts.length){
+      taulu.push(course.parts[i].exercises)
+      i++
+    }
+    const reducer = (acc, curVal) => acc + curVal
+  
+    return(
+      <div>
+        <b>total of {taulu.reduce(reducer)} exercises</b>
+      </div>
+    )
+  }
+
+  export default Course
