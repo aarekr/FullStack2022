@@ -35,16 +35,13 @@ const Part = ({ part }) => {
 }
 
 const Total = ({ course }) => {
-  let i = 0; let taulu = []
-  while (i < course.parts.length){
-    taulu.push(course.parts[i].exercises)
-    i++
-  }
-  const reducer = (acc, curVal) => acc + curVal
+  const summa = course.parts.reduce((sum, parts) => {
+    return sum + parts.exercises
+  }, 0)
 
   return(
     <div>
-      <b>total of {taulu.reduce(reducer)} exercises</b>
+      <b>total of {summa} exercises</b>
     </div>
   )
 }
