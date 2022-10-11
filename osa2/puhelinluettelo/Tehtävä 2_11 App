@@ -1,0 +1,104 @@
+import { useState, useEffect } from "react"
+import axios from 'axios'
+
+const Filter = ({ persons, hakusana, handleHakusana }) => {
+  return(
+    <div>filter shown with <input value={hakusana} onChange={handleHakusana} />
+      <div>
+        <ul>{persons.filter(person => person.name.toLowerCase().includes(hakusana))
+            .map(filteredPerson => 
+              <Persons key={filteredPerson.name} person={filteredPerson} />
+            )}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const PersonForm = ({ addName, newName, newNumber, handleNameChange, handleNumberChange }) => {
+  return(
+    <div>
+      <form onSubmit={addName}>
+        <div>name  : <input value={newName} onChange={handleNameChange} /></div>
+        <div>number: <input value={newNumber} onChange={handleNumberChange} /></div>
+        <div><button type="submit">add</button></div>
+      </form>
+    </div>
+  )
+}
+
+const Persons = ({ person }) => {
+  return(
+    <div>{person.name} {person.number}</div>
+  )
+}
+
+const App = () => {
+  const [persons, setPersons] = useState([]) 
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [hakusana, setHakusana] = useState('')
+
+  useEffect(() => {
+    console.log("effect")
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log("promise fulfilled")
+        setPersons(response.data)
+      })
+  }, [])
+  console.log("render", persons.length, "persons")
+
+  const addName = (event) => {
+    event.preventDefault()
+    const nameObject = {
+      name: newName,
+      number: newNumber
+    }
+    let i = 0
+    let nimiJoOlemassa = false
+    while (i < persons.length){
+      if(persons[i].name === newName){
+        alert(`${newName} is already added to phonebook`)
+        nimiJoOlemassa = true
+        setNewName('')
+        setNewNumber('')
+        break
+      }
+      i++
+    }
+    if(nimiJoOlemassa === false){
+      setPersons(persons.concat(nameObject))
+      setNewName('')
+      setNewNumber('')
+    }
+  }
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+  const handleHakusana = (event) => {
+    setHakusana(event.target.value)
+  }
+  
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter persons={persons} hakusana={hakusana.toLowerCase()} handleHakusana={handleHakusana} />
+      <h3>add a new</h3>
+      <PersonForm addName={addName} newName={newName} newNumber={newNumber} 
+                  handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
+      <h3>Numbers</h3>
+      <ul>
+        {persons.map(person => 
+          <Persons key={person.name} person={person} />
+        )}
+      </ul>
+    </div>
+  )
+}
+
+export default App
