@@ -1,0 +1,76 @@
+import { useState } from "react"
+
+const Display = ({ jokes, selected, votes, lisaaAani, nextAnecdote, eniten }) => {
+  return(
+    <div>
+      <h2>Anecdote of the day</h2>
+      <DayAnecdote jokes={jokes} votes={votes} selected={selected} />
+      <Button handleClick={lisaaAani} text="vote" />
+      <Button handleClick={nextAnecdote} text="next anecdote" />
+      <h2>Anecdote with most votes</h2>
+      <MostVotes jokes={jokes} votes={votes} eniten={eniten} />
+    </div>
+  )
+}
+
+const DayAnecdote = ({ jokes, votes, selected}) => {
+  return(
+    <div>{jokes[selected]} <br /> has {votes[selected]} votes</div>
+  )
+}
+
+const Button = ({ handleClick, text }) => {
+  return(
+    <button onClick={handleClick}>{text}</button>
+  )
+}
+
+const MostVotes = ({ jokes, votes, eniten }) => {
+  return(
+    <div>{jokes[eniten]} <br />has {votes[eniten]} votes</div>
+  )
+}
+
+const App = () => {
+  const anecdotes = [
+    'If it hurts, do it more often.',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when dianosing patients.'
+  ]
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState([0,0,0,0,0,0,0])
+  const [korkein, setKorkein] = useState(0)
+
+  const nextAnecdote = () => {
+    setSelected(() => Math.floor(anecdotes.length*Math.random()))
+  }
+  const lisaaAani = (event) => {
+    event.preventDefault()
+    let kopio = votes
+    kopio[selected] += 1
+    let suurin = 0
+    let suurimman_indeksi = 0
+    for (let i = 0; i < kopio.length; i++) {
+      if (kopio[i] > suurin) {
+        suurin = kopio[i]
+        suurimman_indeksi = i
+      }
+    }
+    setKorkein(suurimman_indeksi)
+    setVotes(kopio.map(vote => vote))
+  }
+  
+  return(
+    <div>
+      <Display jokes={anecdotes} selected={selected} votes={votes}
+               lisaaAani={lisaaAani} nextAnecdote={nextAnecdote}
+               eniten={korkein} />
+    </div>
+  )
+}
+
+export default App
