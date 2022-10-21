@@ -1,0 +1,81 @@
+import axios from "axios"
+import { useState, useEffect } from "react"
+
+const App = () => {
+  const [maat, setMaat] = useState([])
+  const [hakusana, setHakusana] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        setMaat(response.data)
+      })
+  }, [])
+
+  const handleHakusana = (event) => {
+    console.log("handleHakusana:", event.target.value)
+    setHakusana(event.target.value)
+  }
+
+  return (
+    <div>
+      <h2>Maiden tiedot</h2><hr /><br />
+      <Filter maat={maat} hakusana={hakusana.toLowerCase()} 
+              handleHakusana={handleHakusana} />
+    </div>
+  )
+}
+
+const Filter = ({ maat, hakusana, handleHakusana }) => {
+  console.log("kaikki maat:", maat)
+  let maalista = maat
+                .filter(maa => maa.name.common.toLowerCase().includes(hakusana))
+                .map(maa => [maa.name.common, maa.capital, maa.area, 
+                  maa.flags.png, maa.languages])
+  console.log("maalista:", maalista, "listan pituus:", maalista.length)
+  if (maalista.length > 10) {
+    return(
+      <div>find countries <input value={hakusana} onChange={handleHakusana} /> <br />
+        <p>Too many matches, specify another filter</p>
+      </div>
+    )
+  }
+  else if (maalista.length === 1) {
+    return(
+      <div>find countries <input value={hakusana} onChange={handleHakusana} /> <br />
+        <h2>{maalista[0][0]}</h2>
+        <p>capital {maalista[0][1]} <br />
+           area {maalista[0][2]}
+        </p>
+        <h4>langauges:</h4>
+        <ul>
+          {Object.entries(maalista[0][4])
+            .map( ([key, value]) => <li key={key}>{value}</li> )}
+        </ul>
+        <img alt='' src={maalista[0][3]} height='100' widht='150'></img>
+      </div>
+    )
+  }
+  
+  return(
+    <div>find countries <input value={hakusana} onChange={handleHakusana} /> <br />
+      <div>
+        <ul>
+          {maat
+            .filter(maa => maa.name.common.toLowerCase().includes(hakusana))
+            .map(maa => <li key={maa.name.common}><NaytaMaat maa={maa} /></li>)
+          }
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const NaytaMaat = ({ maa }) => {
+  return(
+    <div>{maa.name.common}</div>
+  )
+}
+
+export default App
